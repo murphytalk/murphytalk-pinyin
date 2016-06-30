@@ -1,0 +1,67 @@
+#!/bin/bash
+#$Date: 2004/07/31 17:18:56 $
+DEST=DIST
+IME=murphypinyin.tar
+IPKDIR=IPK
+IPKSH=/root/Zaurus-dev/ipkg-build.sh
+VER=0.03
+
+pre_make(){
+	echo "recreating "$IPKDIR
+	rm -f *.ipk
+	rm -fr $IPKDIR
+	mkdir -p $IPKDIR/etc
+	mkdir -p $IPKDIR/home/zaurus/.murphytalk
+	mkdir -p $IPKDIR/opt/Qtopia/plugins/inputmethods
+	mkdir -p $IPKDIR/CONTROL
+
+	echo "untar IME"
+	tar xf $IME -C $IPKDIR/opt/Qtopia/plugins/inputmethods 
+
+	echo "copy pinyin table" 
+	cp ../scim/pinyin_table.txt $IPKDIR/home/zaurus/.murphytalk
+	cp ../phrase/murphytalk_phrase.dat $IPKDIR/home/zaurus/.murphytalk
+	cp ../phrase/murphytalk_phrase_idx.txt $IPKDIR/home/zaurus/.murphytalk
+	chown -R zaurus $IPKDIR/home/zaurus/.murphytalk
+	chmod -R 777 $IPKDIR/home/zaurus
+	cp ../murphytalk.conf $IPKDIR/etc
+	chmod 644 $IPKDIR/etc/murphytalk.conf
+	echo "creating control file"
+	cat>$IPKDIR/CONTROL/control <<EOF
+Package: murphytalk.pinyin
+Priority: optional
+Section: Utilities
+Version: $VER
+Architecture: arm
+Maintainer: MurphyTalk murphytalk@gmail.com
+Depends: libc6
+Description: port of Scim Chinese of James Su,released under GPL
+EOF
+}
+
+
+if [ ! -d $DEST ]
+then
+	echo "cannot find DIST dir!"
+	exit	
+fi
+
+cd $DEST
+
+if [ ! -e $IME ]
+then
+	echo "arm build first!"
+	exit
+fi
+
+pre_make
+echo Making ipk packages...
+$IPKSH $IPKDIR .
+
+cd ..
+
+#$Log: build-ipk,v $
+#Revision 1.3  2004/07/31 17:18:56  Lu Mu
+#1)$VERSION
+#2)murphytalk_phrase.txt -> murphytalk_phrase.dat
+#

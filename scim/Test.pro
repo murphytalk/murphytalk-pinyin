@@ -1,0 +1,9 @@
+TEMPLATE	=	app
+CONFIG		+= 	qt warn_on release
+HEADERS		=   	../PinyinEngine.h scim_pinyin.h
+SOURCES		=   	../PinyinEngine.cpp scim_pinyin.cpp main.cpp
+TARGET		= 	test
+INCLUDEPATH 	+= 	$(QPEDIR)/include
+DEPENDPATH      += 	../$(QPEDIR)/include ../../taskbar
+LIBS            += 	-lqpe
+VERSION		= 	0.0.1
